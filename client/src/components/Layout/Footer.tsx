@@ -21,7 +21,7 @@ export default function Footer() {
       >
         <Typography variant="body1">Here for you!</Typography>
         <Typography variant="body2" color="text.main">
-          © {year} FE
+          © {year} OE
         </Typography>
       </Box>
     </Box>

@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+
 /* eslint-disable import/no-extraneous-dependencies */
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
@@ -19,7 +20,7 @@ module.exports = withRoutes(
       return [
         {
           source: '/',
-          destination: '/landing',
+          destination: '/main-page',
           permanent: true,
         },
       ];
