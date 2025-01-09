@@ -1,4 +1,5 @@
 import type { ReactElement, ReactNode } from 'react';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { StyledEngineProvider } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -10,6 +11,8 @@ import Head from 'next/head';
 import { queryClient } from '@/config/queryclient.config';
 import { CustomThemeProvider, ThemeVariantProvider } from '@/providers/ThemeVariantProvider';
 import '@/styles/globals.css';
+
+import { NotificationMessages } from '../config/notification.config';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -34,6 +37,7 @@ const MyApp = ({ Component, pageProps }: MyAppProps) => {
         <ThemeVariantProvider>
           <CustomThemeProvider>
             <CssBaseline />
+            <NotificationMessages />
 
             {getLayout(<Component {...pageProps} />)}
           </CustomThemeProvider>

@@ -1,1 +1,1 @@
-export const Endpoints = { EXAMPLE: '/EXAMPLE' };
+export const Endpoints = { chatRoom: '/EXAMPLE', users: '/EXAMPLE', chatMessage: '/EXAMPLE' };
