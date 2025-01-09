@@ -1,9 +1,17 @@
+import { useState } from 'react';
+
 import { Box } from '@mui/material';
 
 import { InnerContainer } from '../common/InnerContainer';
-import { Channels } from './Channels';
+import { Channels } from './Channels/Channels';
 
 export const MainPageContainer = () => {
+  const [selectedChannel, setSelectedChannel] = useState(0);
+
+  const handleChannelClick = (id: number) => {
+    setSelectedChannel(id);
+  };
+
   return (
     <Box
       sx={{
@@ -23,10 +31,10 @@ export const MainPageContainer = () => {
         }}
       >
         <InnerContainer title="Channels">
-          <Channels />
+          <Channels selectedChannelId={selectedChannel} onChannelClick={handleChannelClick} />
         </InnerContainer>
 
-        <InnerContainer title="Chat" />
+        <InnerContainer title="Chat"></InnerContainer>
         <InnerContainer title="Friends" />
       </Box>
     </Box>

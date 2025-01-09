@@ -13,9 +13,10 @@ export const InnerContainer = ({ title, children }: { title: string; children?: 
         border: '1px dotted black',
         px: 2,
         pb: 2,
+        borderRadius: 2,
       }}
     >
-      <Box marginBottom={2} width="100%">
+      <Box my={1.5} width="100%">
         <Box>{title}</Box>
         <Divider />
       </Box>
