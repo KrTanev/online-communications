@@ -4,12 +4,21 @@ import { Box } from '@mui/material';
 
 import { InnerContainer } from '../common/InnerContainer';
 import { Channels } from './Channels/Channels';
+import { ChatRoomView } from './ChatRoom/ChatRoom';
+import { EmptyChat } from './ChatRoom/EmptyChat';
+import { Friends } from './Friends/Friends';
+
+export type SelectedItem = { itemId: string | number; type: 'channel' | 'friend' };
 
 export const MainPageContainer = () => {
-  const [selectedChannel, setSelectedChannel] = useState(0);
+  const [selectedItem, setSelectedItem] = useState<SelectedItem>();
 
   const handleChannelClick = (id: number) => {
-    setSelectedChannel(id);
+    setSelectedItem({ itemId: id, type: 'channel' });
+  };
+
+  const handleFriendClick = (id: number) => {
+    setSelectedItem({ itemId: id, type: 'friend' });
   };
 
   return (
@@ -31,11 +40,26 @@ export const MainPageContainer = () => {
         }}
       >
         <InnerContainer title="Channels">
-          <Channels selectedChannelId={selectedChannel} onChannelClick={handleChannelClick} />
+          <Channels
+            selectedChannelId={Number(selectedItem?.itemId) || 0}
+            onChannelClick={handleChannelClick}
+          />
         </InnerContainer>
 
-        <InnerContainer title="Chat"></InnerContainer>
-        <InnerContainer title="Friends" />
+        <InnerContainer title="Chat">
+          {selectedItem === undefined ? (
+            <EmptyChat />
+          ) : (
+            <ChatRoomView roomName={'Example'} selectedRoomId={String(selectedItem)} />
+          )}
+        </InnerContainer>
+
+        <InnerContainer title="Friends">
+          <Friends
+            selectedFriendId={selectedItem?.itemId as number}
+            onFriendClick={handleFriendClick}
+          />
+        </InnerContainer>
       </Box>
     </Box>
   );
