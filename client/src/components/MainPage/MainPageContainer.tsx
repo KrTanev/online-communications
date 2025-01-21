@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 
 import { InnerContainer } from '../common/InnerContainer';
 import { Channels } from './Channels/Channels';
-import { ChatRoomView } from './ChatRoom/ChatRoom';
+// import { ChatRoomView } from './ChatRoom/ChatRoom';
 import { EmptyChat } from './ChatRoom/EmptyChat';
 import { Friends } from './Friends/Friends';
 
@@ -41,7 +41,7 @@ export const MainPageContainer = () => {
       >
         <InnerContainer title="Channels">
           <Channels
-            selectedChannelId={Number(selectedItem?.itemId) || 0}
+            selectedChannelId={Number(selectedItem?.itemId)}
             onChannelClick={handleChannelClick}
           />
         </InnerContainer>
@@ -50,7 +50,7 @@ export const MainPageContainer = () => {
           {selectedItem === undefined ? (
             <EmptyChat />
           ) : (
-            <ChatRoomView roomName={'Example'} selectedRoomId={String(selectedItem)} />
+            <>{/* <ChatRoomView roomName={'Example'} selectedRoomId={String(selectedItem)} /> */}</>
           )}
         </InnerContainer>
 
