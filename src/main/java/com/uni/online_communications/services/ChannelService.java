@@ -15,4 +15,36 @@ public class ChannelService {
     public List<Channel> getAllChannels() {
         return channelRepository.findAll();
     }
+
+    public Channel getChannelById(Long channelId) {
+        return channelRepository.findById(channelId)
+                .orElseThrow(() -> new IllegalArgumentException("Channel with id: " + channelId + " not found"));
+    }
+
+    public void createChannel(Channel channel) {
+        List<Channel> channels = channelRepository.findAll();
+
+        if (channels.stream().anyMatch(c -> c.getName().equals(channel.getName()))) {
+            throw new IllegalArgumentException("Channel with name: " + channel.getName() + " already exists");
+        }
+
+        channelRepository.save(channel);
+    }
+
+    public void updateChannel(Channel channel) {
+        Channel existingChannel = getChannelById(channel.getId());
+
+        existingChannel.setName(channel.getName());
+        existingChannel.setOwnerId(channel.getOwnerId());
+
+        channelRepository.save(existingChannel);
+    }
+
+    public void softDeleteChannel(Long channelId) {
+        Channel channel = getChannelById(channelId);
+
+        channel.setIsDeleted(true);
+
+        channelRepository.save(channel);
+    }
 }

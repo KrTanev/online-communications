@@ -13,18 +13,18 @@ public class ChannelMember {
 
     @ManyToOne
     @JoinColumn(name = "channel_id", nullable = false)
-    private Channel channel;
+    private Long channel;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Long user;
 
     @Column(nullable = false, length = 30)
     private String role;
 
     @ManyToOne
     @JoinColumn(name = "added_by")
-    private User addedBy;
+    private Long addedBy;
 
     @Column(name = "joined_at", nullable = false)
     private LocalDateTime joinedAt = LocalDateTime.now();
@@ -40,19 +40,19 @@ public class ChannelMember {
         this.id = id;
     }
 
-    public Channel getChannel() {
+    public Long getChannel() {
         return channel;
     }
 
-    public void setChannel(Channel channel) {
+    public void setChannel(Long channel) {
         this.channel = channel;
     }
 
-    public User getUser() {
+    public Long getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(Long user) {
         this.user = user;
     }
 
@@ -64,11 +64,11 @@ public class ChannelMember {
         this.role = role;
     }
 
-    public User getAddedBy() {
+    public Long getAddedBy() {
         return addedBy;
     }
 
-    public void setAddedBy(User addedBy) {
+    public void setAddedBy(Long addedBy) {
         this.addedBy = addedBy;
     }
 
