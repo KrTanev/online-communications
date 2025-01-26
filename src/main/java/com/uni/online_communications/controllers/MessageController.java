@@ -12,20 +12,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uni.online_communications.models.Message;
+import com.uni.online_communications.services.ChannelService;
 import com.uni.online_communications.services.MessageService;
+import com.uni.online_communications.services.UserService;
 
 @RestController
 @RequestMapping("/api/message")
 public class MessageController {
     private final MessageService messageService;
 
-    public MessageController(MessageService messageService) {
+    private final ChannelService channelService;
+
+    private final UserService userService;
+
+    public MessageController(MessageService messageService, ChannelService channelService, UserService userService) {
         this.messageService = messageService;
+        this.channelService = channelService;
+        this.userService = userService;
     }
 
     @GetMapping("/channel/{channelId}")
     public ResponseEntity<List<Message>> getAllMessagesForChannel(@PathVariable Long channelId) {
-        List<Message> messages = messageService.getAllMessagesForChannel(channelId);
+        List<Message> messages = messageService.getAllMessagesForChannel(channelService.getChannelById(channelId));
 
         return ResponseEntity.ok(messages);
     }
@@ -33,7 +41,8 @@ public class MessageController {
     @GetMapping("/user/{recipientId}/{senderId}")
     public ResponseEntity<List<Message>> getAllMessagesBetweenUsers(@PathVariable Long recipientId,
             @PathVariable Long senderId) {
-        List<Message> messages = messageService.getAllMessagesBetweenUsers(recipientId, senderId);
+        List<Message> messages = messageService.getAllMessagesBetweenUsers(userService.getUserById(recipientId),
+                userService.getUserById(senderId));
 
         return ResponseEntity.ok(messages);
     }
@@ -56,8 +65,8 @@ public class MessageController {
 
         Message newMessage = new Message();
 
-        newMessage.setRecipientUser(body.recipientId);
-        newMessage.setSender(body.senderId);
+        newMessage.setRecipientUser(userService.getUserById(body.recipientId));
+        newMessage.setSender(userService.getUserById(body.senderId));
         newMessage.setMessage(body.message);
 
         messageService.createNewMessage(newMessage);
@@ -76,8 +85,8 @@ public class MessageController {
 
         Message newMessage = new Message();
 
-        newMessage.setRecipientChannel(body.channelId);
-        newMessage.setSender(body.senderId);
+        newMessage.setRecipientChannel(channelService.getChannelById(body.channelId));
+        newMessage.setSender(userService.getUserById(body.senderId));
         newMessage.setMessage(body.message);
 
         messageService.createNewMessage(newMessage);
@@ -85,10 +94,4 @@ public class MessageController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/delete/{messageId}")
-    public ResponseEntity<Void> deleteMessage(@PathVariable Long messageId) {
-        messageService.softDeleteMessage(messageId);
-
-        return ResponseEntity.ok().build();
-    }
 }

@@ -36,7 +36,7 @@ public class FriendsController {
 
     @GetMapping("/forUser/{userId}")
     public ResponseEntity<List<FriendsResponse>> getAllFriendsForUser(@PathVariable Long userId) {
-        List<Friend> friends = friendService.getAllFriendsForUser(userId);
+        List<Friend> friends = friendService.getAllFriendsForUser(userService.getUserById(userId));
         List<User> users = userService.getAllUsers();
 
         List<FriendsResponse> foundFriends = friends.stream()
@@ -44,9 +44,9 @@ public class FriendsController {
                     FriendsResponse response = new FriendsResponse();
                     response.friendId = foundFriend.getId();
 
-                    Long friendToSearchData = foundFriend.getFriendOne() == userId
-                            ? foundFriend.getFriendTwo()
-                            : foundFriend.getFriendOne();
+                    Long friendToSearchData = foundFriend.getFriendOne().getId().equals(userId)
+                            ? foundFriend.getFriendTwo().getId()
+                            : foundFriend.getFriendOne().getId();
 
                     response.friendName = users.stream()
                             .filter(user -> user.getId().equals(friendToSearchData))
@@ -63,14 +63,15 @@ public class FriendsController {
 
     @PostMapping("/addFriend/{userId}/{friendId}")
     public ResponseEntity<Void> addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
-        friendService.addFriend(userId, friendId);
+        friendService.addFriend(userService.getUserById(userId), userService.getUserById(friendId));
 
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/deleteFriend/{userId}/{friendId}")
     public ResponseEntity<Void> deleteFriend(@PathVariable Long userId, @PathVariable Long friendId) {
-        friendService.softDeleteFriend(userId, friendId);
+
+        friendService.softDeleteFriend(userService.getUserById(userId), userService.getUserById(friendId));
 
         return ResponseEntity.ok().build();
     }

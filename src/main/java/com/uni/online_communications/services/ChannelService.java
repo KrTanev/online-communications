@@ -2,9 +2,12 @@ package com.uni.online_communications.services;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.uni.online_communications.models.Channel;
 import com.uni.online_communications.repository.ChannelRepository;
 
+@Service
 public class ChannelService {
     private final ChannelRepository channelRepository;
 

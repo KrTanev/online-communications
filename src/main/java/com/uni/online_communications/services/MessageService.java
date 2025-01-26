@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.uni.online_communications.models.Channel;
 import com.uni.online_communications.models.Message;
+import com.uni.online_communications.models.User;
 import com.uni.online_communications.repository.MessageRepository;
 
 @Service
@@ -15,15 +17,17 @@ public class MessageService {
         this.messageRepository = messageRepository;
     }
 
-    public List<Message> getAllMessagesForChannel(Long channelId) {
-        return messageRepository.findAllByRecipientChannelId(channelId)
-                .orElseThrow(() -> new IllegalArgumentException("No messages found for channel with id: " + channelId));
+    public List<Message> getAllMessagesForChannel(Channel channel) {
+        return messageRepository.findAllByRecipientChannel(channel)
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                "No messages found for channel with id: " + channel.getId()));
     }
 
-    public List<Message> getAllMessagesBetweenUsers(Long recipientId, Long senderId) {
-        return messageRepository.findAllByRecipientUserAndSenderId(recipientId, senderId)
+    public List<Message> getAllMessagesBetweenUsers(User recipient, User sender) {
+        return messageRepository.findAllByRecipientUserAndSender(recipient, sender)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "No messages found between users with ids: " + recipientId + " and " + senderId));
+                        "No messages found between users with ids: " + recipient.getId() + " and " + sender.getId()));
     }
 
     public Message createNewMessage(Message message) {

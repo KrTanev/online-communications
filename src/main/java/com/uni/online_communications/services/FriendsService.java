@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.uni.online_communications.models.Friend;
+import com.uni.online_communications.models.User;
 import com.uni.online_communications.repository.FriendRepository;
 
 @Service
@@ -15,44 +16,44 @@ public class FriendsService {
         this.userRepository = userRepository;
     }
 
-    public List<Friend> getAllFriendsForUser(Long userId) {
-        List<Friend> foundFriends = userRepository.findByUser1IdOrUser2Id(userId, userId);
+    public List<Friend> getAllFriendsForUser(User user) {
+        List<Friend> foundFriends = userRepository.findByFriendOneOrFriendTwo(user, user);
 
         if (foundFriends.isEmpty()) {
-            throw new IllegalArgumentException("No friends found for user with id: " + userId);
+            throw new IllegalArgumentException("No friends found for user with username: " + user.getUsername());
         }
 
         return foundFriends;
     }
 
-    public void addFriend(Long userId, Long friendId) {
-        if (userId.equals(friendId)) {
+    public void addFriend(User firstUser, User secondUser) {
+        if (firstUser.equals(secondUser)) {
             throw new IllegalArgumentException("User cannot be friends with themselves");
         }
 
-        List<Friend> foundFriends = userRepository.findByUser1IdOrUser2Id(userId, userId);
+        List<Friend> foundFriends = userRepository.findByFriendOneOrFriendTwo(firstUser, firstUser);
 
         for (Friend friend : foundFriends) {
-            if (friend.getFriendOne().equals(friendId) || friend.getFriendTwo().equals(friendId)) {
+            if (friend.getFriendOne().equals(secondUser) || friend.getFriendTwo().equals(secondUser)) {
                 throw new IllegalArgumentException("Users are already friends");
             }
         }
 
         Friend friend = new Friend();
 
-        friend.setFriendOne(userId);
-        friend.setFriendTwo(friendId);
+        friend.setFriendOne(firstUser);
+        friend.setFriendTwo(secondUser);
 
         userRepository.save(friend);
     }
 
-    public void softDeleteFriend(Long userId, Long friendId) {
-        List<Friend> foundFriends = userRepository.findByUser1IdOrUser2Id(userId, userId);
+    public void softDeleteFriend(User userOne, User userTwo) {
+        List<Friend> foundFriends = userRepository.findByFriendOneOrFriendTwo(userOne, userTwo);
 
         Friend foundFriend = null;
 
         for (Friend friend : foundFriends) {
-            if (friend.getFriendOne().equals(friendId) || friend.getFriendTwo().equals(friendId)) {
+            if (friend.getFriendOne().equals(userTwo) || friend.getFriendTwo().equals(userTwo)) {
                 foundFriend = friend;
                 break;
             }

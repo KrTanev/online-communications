@@ -64,7 +64,7 @@ public class ChannelsController {
                     response.createdAt = channel.getCreatedAt();
                     response.ownerId = channel.getOwnerId();
                     response.memberIds = channelMembers.stream()
-                            .map(channelMember -> channelMember.getUser()).collect(Collectors.toList());
+                            .map(channelMember -> channelMember.getUser().getId()).collect(Collectors.toList());
                     return response;
                 })
                 .collect(Collectors.toList());
@@ -93,14 +93,15 @@ public class ChannelsController {
         List<ChannelMembersResponse> response = channelMembers.stream().map(channelMember -> {
             ChannelMembersResponse member = new ChannelMembersResponse();
 
-            member.channelId = channelMember.getChannel();
-            member.user.userId = channelMember.getUser();
+            member.channelId = channelMember.getChannel().getId();
+            member.user.userId = channelMember.getUser().getId();
+            ;
 
-            User user = userService.getUserById(channelMember.getUser());
+            User user = userService.getUserById(channelMember.getUser().getId());
             member.user.username = user.getUsername();
             member.user.userId = user.getId();
 
-            User addedByUser = userService.getUserById(channelMember.getUser());
+            User addedByUser = userService.getUserById(channelMember.getUser().getId());
             member.addedBy.userId = addedByUser.getId();
             member.addedBy.username = addedByUser.getUsername();
 
@@ -138,7 +139,11 @@ public class ChannelsController {
 
     @PutMapping("/{channelId}/edit/members")
     public void editChannelMembers(@PathParam("channelId") Long channelId, @RequestBody List<Long> userIds) {
-        channelMemberService.changeMembersInChannel(channelId, userIds);
+
+        Channel channel = channelService.getChannelById(channelId);
+        List<User> users = userIds.stream().map(userId -> userService.getUserById(userId)).collect(Collectors.toList());
+
+        channelMemberService.changeMembersInChannel(channel, users);
     }
 
     @PutMapping("/{channelId}/delete")
