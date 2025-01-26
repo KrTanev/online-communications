@@ -13,11 +13,11 @@ public class Friend {
 
     @ManyToOne
     @JoinColumn(name = "friend_id_one", nullable = false)
-    private User friendOne;
+    private Long friendOne;
 
     @ManyToOne
     @JoinColumn(name = "friend_id_two", nullable = false)
-    private User friendTwo;
+    private Long friendTwo;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -33,19 +33,19 @@ public class Friend {
         this.id = id;
     }
 
-    public User getFriendOne() {
+    public Long getFriendOne() {
         return friendOne;
     }
 
-    public void setFriendOne(User friendOne) {
+    public void setFriendOne(Long friendOne) {
         this.friendOne = friendOne;
     }
 
-    public User getFriendTwo() {
+    public Long getFriendTwo() {
         return friendTwo;
     }
 
-    public void setFriendTwo(User friendTwo) {
+    public void setFriendTwo(Long friendTwo) {
         this.friendTwo = friendTwo;
     }
 
