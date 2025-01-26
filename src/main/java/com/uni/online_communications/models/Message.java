@@ -13,15 +13,15 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name = "sender_id", nullable = false)
-    private User sender;
+    private Long sender;
 
     @ManyToOne
     @JoinColumn(name = "recipient_user_id")
-    private User recipientUser;
+    private Long recipientUser;
 
     @ManyToOne
     @JoinColumn(name = "recipient_channel_id")
-    private Channel recipientChannel;
+    private Long recipientChannel;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
@@ -40,27 +40,27 @@ public class Message {
         this.id = id;
     }
 
-    public User getSender() {
+    public Long getSender() {
         return sender;
     }
 
-    public void setSender(User sender) {
+    public void setSender(Long sender) {
         this.sender = sender;
     }
 
-    public User getRecipientUser() {
+    public Long getRecipientUser() {
         return recipientUser;
     }
 
-    public void setRecipientUser(User recipientUser) {
+    public void setRecipientUser(Long recipientUser) {
         this.recipientUser = recipientUser;
     }
 
-    public Channel getRecipientChannel() {
+    public Long getRecipientChannel() {
         return recipientChannel;
     }
 
-    public void setRecipientChannel(Channel recipientChannel) {
+    public void setRecipientChannel(Long recipientChannel) {
         this.recipientChannel = recipientChannel;
     }
 

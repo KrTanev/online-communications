@@ -30,4 +30,12 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
+    public void softDeleteMessage(Long messageId) {
+        Message messageToDelete = (Message) messageRepository.getByIdAndIsDeleted(messageId, false)
+                .orElseThrow(() -> new IllegalArgumentException("No message found with id: " + messageId));
+
+        messageToDelete.setIsDeleted(true);
+        messageRepository.save(messageToDelete);
+    }
+
 }

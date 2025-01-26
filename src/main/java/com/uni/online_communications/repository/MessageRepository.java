@@ -13,4 +13,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     Optional<List<Message>> findAllByRecipientChannelId(Long channelId);
 
     Optional<List<Message>> findAllByRecipientUserAndSenderId(Long recipientId, Long senderId);
+
+    Optional<List<Message>> getByIdAndIsDeleted(Long messageId, Boolean isDeleted);
 }
