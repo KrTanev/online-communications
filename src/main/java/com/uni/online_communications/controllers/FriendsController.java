@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.uni.online_communications.dto.response.FriendsResponse;
 import com.uni.online_communications.models.Friend;
 import com.uni.online_communications.models.User;
 import com.uni.online_communications.services.FriendsService;
@@ -28,12 +29,6 @@ public class FriendsController {
         this.userService = userService;
     }
 
-    public class FriendsResponse {
-        Long friendId;
-        String friendName;
-        String friendEmail;
-    }
-
     @GetMapping("/forUser/{userId}")
     public ResponseEntity<List<FriendsResponse>> getAllFriendsForUser(@PathVariable Long userId) {
         List<Friend> friends = friendService.getAllFriendsForUser(userService.getUserById(userId));
@@ -42,18 +37,19 @@ public class FriendsController {
         List<FriendsResponse> foundFriends = friends.stream()
                 .map(foundFriend -> {
                     FriendsResponse response = new FriendsResponse();
-                    response.friendId = foundFriend.getId();
+                    response.setFriendId(foundFriend.getId());
 
                     Long friendToSearchData = foundFriend.getFriendOne().getId().equals(userId)
                             ? foundFriend.getFriendTwo().getId()
                             : foundFriend.getFriendOne().getId();
 
-                    response.friendName = users.stream()
+                    response.setFriendName(users.stream()
                             .filter(user -> user.getId().equals(friendToSearchData))
-                            .findFirst().get().getUsername();
-                    response.friendEmail = users.stream()
+                            .findFirst().get().getUsername());
+
+                    response.setFriendEmail(users.stream()
                             .filter(user -> user.getId().equals(friendToSearchData))
-                            .findFirst().get().getEmail();
+                            .findFirst().get().getEmail());
                     return response;
                 })
                 .collect(Collectors.toList());
