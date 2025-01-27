@@ -10,4 +10,6 @@ import com.uni.online_communications.models.ChannelMember;
 @Service
 public interface ChannelMemberRepository extends JpaRepository<ChannelMember, Long> {
     <Optional> List<ChannelMember> findAllByChannelId(Long channelId);
+
+    <Optional> List<ChannelMember> findAllByUserId(Long userId);
 }

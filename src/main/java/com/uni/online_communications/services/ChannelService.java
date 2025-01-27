@@ -24,6 +24,10 @@ public class ChannelService {
                 .orElseThrow(() -> new IllegalArgumentException("Channel with id: " + channelId + " not found"));
     }
 
+    public List<Channel> getChannelsByIds(List<Long> channelIds) {
+        return channelRepository.findAllById(channelIds);
+    }
+
     public void createChannel(Channel channel) {
         List<Channel> channels = channelRepository.findAll();
 

@@ -5,12 +5,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.uni.online_communications.dto.request.ChannelCreateRequest;
+import com.uni.online_communications.dto.response.AccessibleChannelsResponse;
+import com.uni.online_communications.dto.response.ChannelMembersResponse;
+import com.uni.online_communications.dto.response.MemberResponse;
 import com.uni.online_communications.models.Channel;
 import com.uni.online_communications.models.ChannelMember;
 import com.uni.online_communications.models.User;
@@ -37,93 +42,62 @@ public class ChannelsController {
         this.userService = userService;
     }
 
-    class AccessibleChannelsResponse {
-        Long channelId;
-        String channelName;
-        Timestamp createdAt;
-        Long ownerId;
-        List<Long> memberIds;
-    }
-
     @GetMapping("/user/{userId}")
-    public List<AccessibleChannelsResponse> getAccessibleChannels(@PathParam("userId") Long userId) {
-        List<Channel> channels = channelService.getAllChannels();
-        List<ChannelMember> channelMembers = channelMemberService.getAllChannelMembers();
+    public List<AccessibleChannelsResponse> getAccessibleChannels(@PathVariable("userId") Long userId) {
+        List<ChannelMember> userChannelMembers = channelMemberService.getAllChannelsPerMember(userId);
 
-        List<ChannelMember> matchedChannels = channelMembers.stream()
-                .filter(channelMember -> channelMember.getUser().equals(userId))
-                .collect(Collectors.toList());
+        List<Channel> userChannels = channelService.getChannelsByIds(
+                userChannelMembers.stream()
+                        .map(channelMember -> channelMember.getChannel().getId())
+                        .collect(Collectors.toList()));
 
-        List<AccessibleChannelsResponse> accessibleChannels = channels.stream()
-                .filter(channel -> matchedChannels.stream()
-                        .anyMatch(channelMember -> channelMember.getChannel().equals(channel.getId())))
+        return userChannels.stream()
                 .map(channel -> {
                     AccessibleChannelsResponse response = new AccessibleChannelsResponse();
-                    response.channelId = channel.getId();
-                    response.channelName = channel.getName();
-                    response.createdAt = channel.getCreatedAt();
-                    response.ownerId = channel.getOwnerId();
-                    response.memberIds = channelMembers.stream()
-                            .map(channelMember -> channelMember.getUser().getId()).collect(Collectors.toList());
+                    response.setChannelId(channel.getId());
+                    response.setChannelName(channel.getName());
+                    response.setCreatedAt(channel.getCreatedAt());
+                    response.setOwnerId(channel.getOwnerId());
+
+                    response.setMemberIds(userChannelMembers.stream()
+                            .filter(channelMember -> channelMember.getChannel().equals(channel))
+                            .map(channelMember -> channelMember.getUser().getId())
+                            .collect(Collectors.toList()));
                     return response;
                 })
                 .collect(Collectors.toList());
-
-        return accessibleChannels;
-
-    }
-
-    class Member {
-        Long userId;
-        String username;
-    }
-
-    class ChannelMembersResponse {
-        Long channelId;
-        Member user;
-        Member addedBy;
-        Timestamp joinedAt;
-        Boolean isDeleted;
     }
 
     @GetMapping("/{channelId}/members")
-    public List<ChannelMembersResponse> getAllChannelMembers(@PathParam("channelId") Long channelId) {
+    public List<ChannelMembersResponse> getAllChannelMembers(@PathVariable("channelId") Long channelId) {
         List<ChannelMember> channelMembers = channelMemberService.getAllMembersPerChannel(channelId);
 
         List<ChannelMembersResponse> response = channelMembers.stream().map(channelMember -> {
-            ChannelMembersResponse member = new ChannelMembersResponse();
+            Long userId = channelMember.getUser().getId();
+            User user = userService.getUserById(userId);
+            MemberResponse memberUser = new MemberResponse(userId, user.getUsername());
 
-            member.channelId = channelMember.getChannel().getId();
-            member.user.userId = channelMember.getUser().getId();
-            ;
+            Long addedByUserId = channelMember.getAddedBy().getId();
+            User addedByUser = userService.getUserById(addedByUserId);
+            MemberResponse addedByMember = new MemberResponse(addedByUserId, addedByUser.getUsername());
 
-            User user = userService.getUserById(channelMember.getUser().getId());
-            member.user.username = user.getUsername();
-            member.user.userId = user.getId();
-
-            User addedByUser = userService.getUserById(channelMember.getUser().getId());
-            member.addedBy.userId = addedByUser.getId();
-            member.addedBy.username = addedByUser.getUsername();
-
-            member.joinedAt = Timestamp.valueOf(channelMember.getJoinedAt());
-            member.isDeleted = channelMember.getIsDeleted();
-            return member;
+            return new ChannelMembersResponse(
+                    channelMember.getChannel().getId(),
+                    memberUser,
+                    addedByMember,
+                    Timestamp.valueOf(channelMember.getJoinedAt()),
+                    channelMember.getIsDeleted());
         }).collect(Collectors.toList());
 
         return response;
-    }
-
-    class ChannelCreateRequest {
-        String name;
-        Long ownerId;
     }
 
     @PostMapping("/create")
     public void createChannel(@RequestBody ChannelCreateRequest body) {
         Channel channel = new Channel();
 
-        channel.setName(body.name);
-        channel.setOwnerId(body.ownerId);
+        channel.setName(body.getName());
+        channel.setOwnerId(body.getOwnerId());
 
         channelService.createChannel(channel);
     }

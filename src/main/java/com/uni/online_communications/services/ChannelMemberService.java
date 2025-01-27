@@ -32,6 +32,16 @@ public class ChannelMemberService {
         return channelMembers;
     }
 
+    public List<ChannelMember> getAllChannelsPerMember(Long userId) {
+        List<ChannelMember> channelMembers = channelMemberRepository.findAllByUserId(userId);
+
+        if (channelMembers.isEmpty()) {
+            throw new IllegalArgumentException("No channels found for user with id: " + userId);
+        }
+
+        return channelMembers;
+    }
+
     public void changeMembersInChannel(Channel channel, List<User> userIds) {
         List<ChannelMember> channelMembers = channelMemberRepository.findAllByChannelId(channel.getId());
 
