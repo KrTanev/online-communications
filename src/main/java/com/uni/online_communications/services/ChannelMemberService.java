@@ -2,8 +2,11 @@ package com.uni.online_communications.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.uni.online_communications.models.Channel;
 import com.uni.online_communications.models.ChannelMember;
@@ -23,7 +26,7 @@ public class ChannelMemberService {
     }
 
     public List<ChannelMember> getAllMembersPerChannel(Long channelId) {
-        List<ChannelMember> channelMembers = channelMemberRepository.findAllByChannelId(channelId);
+        List<ChannelMember> channelMembers = channelMemberRepository.findAllByChannelIdAndIsDeletedFalse(channelId);
 
         if (channelMembers.isEmpty()) {
             throw new IllegalArgumentException("No members found for channel with id: " + channelId);
@@ -33,7 +36,7 @@ public class ChannelMemberService {
     }
 
     public List<ChannelMember> getAllChannelsPerMember(Long userId) {
-        List<ChannelMember> channelMembers = channelMemberRepository.findAllByUserId(userId);
+        List<ChannelMember> channelMembers = channelMemberRepository.findAllByUserIdAndIsDeletedFalse(userId);
 
         if (channelMembers.isEmpty()) {
             throw new IllegalArgumentException("No channels found for user with id: " + userId);
@@ -42,38 +45,41 @@ public class ChannelMemberService {
         return channelMembers;
     }
 
-    public void changeMembersInChannel(Channel channel, List<User> userIds) {
-        List<ChannelMember> channelMembers = channelMemberRepository.findAllByChannelId(channel.getId());
+    @Transactional
+    public void changeMembersInChannel(Channel channel, List<User> userIds, User addedBy) {
+        List<ChannelMember> channelMembers = channelMemberRepository
+                .findAllByChannelIdAndIsDeletedFalse(channel.getId());
 
-        if (channelMembers.isEmpty()) {
-            throw new IllegalArgumentException("No members found for channel with id: " + channel.getId());
-        }
+        Set<Long> existingMemberIds = channelMembers.stream()
+                .map(cm -> cm.getUser().getId())
+                .collect(Collectors.toSet());
 
-        List<User> existingMembers = channelMembers.stream()
-                .map(ChannelMember::getUser)
-                .toList();
+        Set<Long> newMemberIds = userIds.stream()
+                .map(User::getId)
+                .collect(Collectors.toSet());
 
         List<User> membersToAdd = userIds.stream()
-                .filter(userId -> !existingMembers.contains(userId))
+                .filter(user -> !existingMemberIds.contains(user.getId()))
                 .toList();
 
-        List<User> membersToRemove = existingMembers.stream()
-                .filter(userId -> !userIds.contains(userId))
+        List<User> membersToRemove = channelMembers.stream()
+                .map(ChannelMember::getUser)
+                .filter(user -> !newMemberIds.contains(user.getId()))
                 .toList();
 
-        addMembersToChannel(channel, membersToAdd);
+        addMembersToChannel(channel, membersToAdd, addedBy);
         removeMembersForChannel(channel, membersToRemove.stream()
                 .map(User::getId)
                 .toList());
     }
 
-    private void addMembersToChannel(Channel channelId, List<User> users) {
+    private void addMembersToChannel(Channel channel, List<User> users, User addedBy) {
         users.forEach(user -> {
             ChannelMember channelMember = new ChannelMember();
-            channelMember.setChannel(channelId);
+            channelMember.setChannel(channel);
             channelMember.setUser(user);
             channelMember.setRole("MEMBER");
-            channelMember.setAddedBy(user);
+            channelMember.setAddedBy(addedBy);
             channelMember.setJoinedAt(LocalDateTime.now());
             channelMember.setIsDeleted(false);
 
@@ -82,13 +88,7 @@ public class ChannelMemberService {
     }
 
     private void removeMembersForChannel(Channel channel, List<Long> userIds) {
-        List<ChannelMember> channelMembers = channelMemberRepository.findAllByChannelId(channel.getId());
-
-        if (channelMembers.isEmpty()) {
-            throw new IllegalArgumentException("No members found for channel with id: " + channel.getId());
-        }
-
-        channelMembers.stream()
+        channelMemberRepository.findAllByChannelIdAndIsDeletedFalse(channel.getId()).stream()
                 .filter(channelMember -> userIds.contains(channelMember.getUser().getId()))
                 .forEach(channelMember -> {
                     channelMember.setIsDeleted(true);

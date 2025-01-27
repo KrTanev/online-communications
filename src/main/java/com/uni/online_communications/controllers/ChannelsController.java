@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uni.online_communications.dto.request.ChannelCreateRequest;
+import com.uni.online_communications.dto.request.EditChannelMembersRequest;
+import com.uni.online_communications.dto.request.EditChannelNameRequest;
 import com.uni.online_communications.dto.response.AccessibleChannelsResponse;
 import com.uni.online_communications.dto.response.ChannelMembersResponse;
 import com.uni.online_communications.dto.response.MemberResponse;
@@ -22,8 +24,6 @@ import com.uni.online_communications.models.User;
 import com.uni.online_communications.services.ChannelMemberService;
 import com.uni.online_communications.services.ChannelService;
 import com.uni.online_communications.services.UserService;
-
-import jakarta.websocket.server.PathParam;
 
 @RestController
 @RequestMapping("/api/channel")
@@ -103,25 +103,27 @@ public class ChannelsController {
     }
 
     @PutMapping("/{channelId}/edit")
-    public void editChannelName(@PathParam("channelId") Long channelId, @RequestBody String name) {
+    public void editChannelName(@PathVariable("channelId") Long channelId, @RequestBody EditChannelNameRequest body) {
         Channel channel = channelService.getChannelById(channelId);
 
-        channel.setName(name);
+        channel.setName(body.getName());
 
         channelService.updateChannel(channel);
     }
 
     @PutMapping("/{channelId}/edit/members")
-    public void editChannelMembers(@PathParam("channelId") Long channelId, @RequestBody List<Long> userIds) {
-
+    public void editChannelMembers(@PathVariable("channelId") Long channelId,
+            @RequestBody EditChannelMembersRequest body) {
         Channel channel = channelService.getChannelById(channelId);
-        List<User> users = userIds.stream().map(userId -> userService.getUserById(userId)).collect(Collectors.toList());
+        List<User> users = body.getUserIds().stream()
+                .map(userId -> userService.getUserById(userId))
+                .collect(Collectors.toList());
 
-        channelMemberService.changeMembersInChannel(channel, users);
+        channelMemberService.changeMembersInChannel(channel, users, userService.getUserById(channel.getOwnerId()));
     }
 
     @PutMapping("/{channelId}/delete")
-    public void deleteChannel(@PathParam("channelId") Long channelId) {
+    public void deleteChannel(@PathVariable("channelId") Long channelId) {
         channelService.softDeleteChannel(channelId);
     }
 
