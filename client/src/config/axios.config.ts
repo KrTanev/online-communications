@@ -6,7 +6,7 @@ export const commonHeaders = {
 };
 
 export const axiosClient = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: 'http://localhost:8165/api',
   timeout: 10 * 1000,
   headers: {
     ...commonHeaders,

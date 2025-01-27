@@ -1,1 +1,8 @@
-export const Endpoints = { chatRoom: '/EXAMPLE', users: '/EXAMPLE', chatMessage: '/EXAMPLE' };
+import { channel } from 'diagnostics_channel';
+
+export const Endpoints = {
+  user: '/user',
+  channel: '/channel',
+  friends: '/friends',
+  message: '/message',
+};
