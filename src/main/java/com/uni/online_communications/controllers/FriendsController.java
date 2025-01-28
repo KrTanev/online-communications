@@ -56,21 +56,21 @@ public class FriendsController {
                 })
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(foundFriends);
+        return ResponseEntity.ok().body(foundFriends);
     }
 
     @PostMapping("/addFriend/{userId}/{friendId}")
-    public ResponseEntity<Void> addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+    public ResponseEntity<String> addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
         friendService.addFriend(userService.getUserById(userId), userService.getUserById(friendId));
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("Successfully added friend.");
     }
 
     @PutMapping("/deleteFriend/{userId}/{friendId}")
-    public ResponseEntity<Void> deleteFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+    public ResponseEntity<String> deleteFriend(@PathVariable Long userId, @PathVariable Long friendId) {
 
         friendService.softDeleteFriend(userService.getUserById(userId), userService.getUserById(friendId));
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("Successfully deleted friend.");
     }
 }

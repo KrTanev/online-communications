@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,7 +45,7 @@ public class ChannelsController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<AccessibleChannelsResponse> getAccessibleChannels(@PathVariable("userId") Long userId) {
+    public ResponseEntity<List<AccessibleChannelsResponse>> getAccessibleChannels(@PathVariable("userId") Long userId) {
         List<ChannelMember> userChannelMembers = channelMemberService.getAllChannelsPerMember(userId);
 
         List<Channel> userChannels = channelService.getChannelsByIds(
@@ -52,7 +53,7 @@ public class ChannelsController {
                         .map(channelMember -> channelMember.getChannel().getId())
                         .collect(Collectors.toList()));
 
-        return userChannels.stream()
+        return ResponseEntity.ok().body(userChannels.stream()
                 .map(channel -> {
                     AccessibleChannelsResponse response = new AccessibleChannelsResponse();
                     response.setChannelId(channel.getId());
@@ -66,11 +67,12 @@ public class ChannelsController {
                             .collect(Collectors.toList()));
                     return response;
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("/{channelId}/members")
-    public List<ChannelMembersResponse> getAllChannelMembers(@PathVariable("channelId") Long channelId) {
+    public ResponseEntity<List<ChannelMembersResponse>> getAllChannelMembers(
+            @PathVariable("channelId") Long channelId) {
         List<ChannelMember> channelMembers = channelMemberService.getAllMembersPerChannel(channelId);
 
         List<ChannelMembersResponse> response = channelMembers.stream().map(channelMember -> {
@@ -90,11 +92,11 @@ public class ChannelsController {
                     channelMember.getIsDeleted());
         }).collect(Collectors.toList());
 
-        return response;
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/create")
-    public void createChannel(@RequestBody ChannelCreateRequest body) {
+    public ResponseEntity<String> createChannel(@RequestBody ChannelCreateRequest body) {
         Channel channel = new Channel();
 
         channel.setName(body.getName());
@@ -108,10 +110,14 @@ public class ChannelsController {
 
         channelMemberService.changeMembersInChannel(channelService.getChannelById(channel.getId()), users,
                 userService.getUserById(channel.getOwnerId()));
+
+        return ResponseEntity.ok().body("Successfully created channel.");
+
     }
 
     @PutMapping("/{channelId}/edit")
-    public void editChannel(@PathVariable("channelId") Long channelId, @RequestBody EditChannelRequest body) {
+    public ResponseEntity<String> editChannel(@PathVariable("channelId") Long channelId,
+            @RequestBody EditChannelRequest body) {
         Channel channel = channelService.getChannelById(channelId);
 
         if (body.getName() != null) {
@@ -126,11 +132,16 @@ public class ChannelsController {
 
             channelMemberService.changeMembersInChannel(channel, users, userService.getUserById(channel.getOwnerId()));
         }
+
+        return ResponseEntity.ok().body("Successfully edited channel.");
+
     }
 
     @PutMapping("/{channelId}/delete")
-    public void deleteChannel(@PathVariable("channelId") Long channelId) {
+    public ResponseEntity<String> deleteChannel(@PathVariable("channelId") Long channelId) {
         channelService.softDeleteChannel(channelId);
+
+        return ResponseEntity.ok().body("Successfully deleted channel.");
     }
 
 }

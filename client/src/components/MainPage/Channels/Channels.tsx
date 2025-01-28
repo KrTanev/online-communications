@@ -17,7 +17,7 @@ import { ChannelListItem } from './ChannelListItem';
 
 type ChannelsProps = {
   selectedChannelId: number;
-  onChannelClick: (id: AccessibleChannelsResponse) => void;
+  onChannelClick: (id: number) => void;
 };
 
 export const Channels = ({ selectedChannelId, onChannelClick }: ChannelsProps) => {
@@ -94,7 +94,7 @@ export const Channels = ({ selectedChannelId, onChannelClick }: ChannelsProps) =
           <ChannelListItem
             key={x.id}
             item={x}
-            onClick={onChannelClick}
+            onClick={(item) => onChannelClick(item.id)}
             onEditClick={handleEditClick}
             onDeleteClick={handleDeleteClick}
             selected={x.id === selectedChannelId}

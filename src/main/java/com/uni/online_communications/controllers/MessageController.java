@@ -52,7 +52,7 @@ public class MessageController {
     }
 
     @PostMapping("/users/create")
-    public ResponseEntity<Void> addMessageBetweenUsers(@RequestBody MessageFriendsRequest body) {
+    public ResponseEntity<String> addMessageBetweenUsers(@RequestBody MessageFriendsRequest body) {
 
         Message newMessage = new Message();
 
@@ -62,7 +62,7 @@ public class MessageController {
 
         messageService.createNewMessage(newMessage);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("Successfully submitted message.");
     }
 
     @PutMapping("/delete/{messageId}")
@@ -73,7 +73,7 @@ public class MessageController {
     }
 
     @PostMapping("/channel/create")
-    public ResponseEntity<Void> addMessageInChannel(@RequestBody MessageChannelRequest body) {
+    public ResponseEntity<String> addMessageInChannel(@RequestBody MessageChannelRequest body) {
 
         Message newMessage = new Message();
 
@@ -83,7 +83,7 @@ public class MessageController {
 
         messageService.createNewMessage(newMessage);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("Successfully submitted message.");
     }
 
 }
