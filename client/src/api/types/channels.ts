@@ -1,21 +1,21 @@
 import { BaseEntity } from './generic';
 
 type Channel = BaseEntity & {
-  name: string;
+  channelId: number;
+  channelName: string;
   ownerId: number;
+  memberIds: number[];
 };
 
 export type ChannelCreateRequest = {
   name: string;
   ownerId: number;
+  memberIds: number[];
 };
 
-export type EditChannelNameRequest = {
+export type EditChannelRequest = {
   name: string;
-};
-
-export type EditChannelMembersRequest = {
-  userIds: number[];
+  memberIds: number[];
 };
 
 export type AccessibleChannelsResponse = Channel & {

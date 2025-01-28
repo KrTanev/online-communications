@@ -25,7 +25,7 @@ public class ChannelService {
     }
 
     public List<Channel> getChannelsByIds(List<Long> channelIds) {
-        return channelRepository.findAllById(channelIds);
+        return channelRepository.findAllByIdInAndIsDeletedFalse(channelIds);
     }
 
     public void createChannel(Channel channel) {

@@ -3,21 +3,15 @@ import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import { Box, ListItem } from '@mui/material';
 import { grey } from '@mui/material/colors';
 
+import { AccessibleChannelsResponse } from '../../../api/types/channels';
 import { IconWrapper } from '../../common/IconWrapper';
 
-export type ChannelListItemType = {
-  id: number;
-  name: string;
-  ownerId: number;
-  participants: string[];
-};
-
 type ChannelListItemProps = {
-  item: ChannelListItemType;
+  item: AccessibleChannelsResponse;
   selected: boolean;
-  onClick: (id: number) => void;
-  onEditClick: (id: number) => void;
-  onDeleteClick: (id: number) => void;
+  onClick: (id: AccessibleChannelsResponse) => void;
+  onEditClick: (id: AccessibleChannelsResponse) => void;
+  onDeleteClick: (id: AccessibleChannelsResponse) => void;
 };
 
 export const ChannelListItem = ({
@@ -37,7 +31,7 @@ export const ChannelListItem = ({
           bgcolor: !selected ? grey[500] : undefined,
         },
       }}
-      onClick={() => onClick(item.id)}
+      onClick={() => onClick(item)}
     >
       <Box
         sx={{
@@ -47,14 +41,14 @@ export const ChannelListItem = ({
           width: '100%',
         }}
       >
-        <Box>{item.name}</Box>
+        <Box>{item.channelName}</Box>
 
         <Box>
-          <IconWrapper onClick={() => onEditClick(item.id)} tooltipTitle="Edit">
+          <IconWrapper onClick={() => onEditClick(item)} tooltipTitle="Edit">
             <ModeEditOutlineIcon />
           </IconWrapper>
 
-          <IconWrapper onClick={() => onDeleteClick(item.id)} tooltipTitle="Delete">
+          <IconWrapper onClick={() => onDeleteClick(item)} tooltipTitle="Delete">
             <DeleteIcon />
           </IconWrapper>
         </Box>
