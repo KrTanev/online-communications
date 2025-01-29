@@ -4,23 +4,28 @@ import { Box } from '@mui/material';
 
 import { InnerContainer } from '../common/InnerContainer';
 import { Channels } from './Channels/Channels';
-// import { ChatRoomView } from './ChatRoom/ChatRoom';
+import { ChatRoomView } from './ChatRoom/ChatRoom';
 import { EmptyChat } from './ChatRoom/EmptyChat';
 import { Friends } from './Friends/Friends';
 
-export type SelectedItem = { itemId: string | number; type: 'channel' | 'friend' };
+export type SelectedItem = {
+  itemId: string | number;
+  type: 'channel' | 'friend';
+  chatName: string;
+};
 
 export const MainPageContainer = () => {
   const [selectedItem, setSelectedItem] = useState<SelectedItem>();
 
-  const handleChannelClick = (id: number) => {
-    setSelectedItem({ itemId: id, type: 'channel' });
+  const handleChannelClick = (id: number, channelName: string) => {
+    setSelectedItem({ itemId: id, type: 'channel', chatName: channelName });
   };
 
-  const handleFriendClick = (id: number) => {
-    setSelectedItem({ itemId: id, type: 'friend' });
+  const handleFriendClick = (id: number, friendName: string) => {
+    setSelectedItem({ itemId: id, type: 'friend', chatName: friendName });
   };
 
+  console.log('selectedItem', selectedItem);
   return (
     <Box
       sx={{
@@ -50,7 +55,10 @@ export const MainPageContainer = () => {
           {selectedItem === undefined ? (
             <EmptyChat />
           ) : (
-            <>{/* <ChatRoomView roomName={'Example'} selectedRoomId={String(selectedItem)} /> */}</>
+            <ChatRoomView
+              roomName={selectedItem.chatName}
+              selectedRoomId={Number(selectedItem.itemId)}
+            />
           )}
         </InnerContainer>
 

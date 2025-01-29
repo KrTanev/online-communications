@@ -1,16 +1,16 @@
-import { BaseEntity } from './generic';
+import { BaseEntity, User } from './generic';
 
 export type Message = BaseEntity & {
-  senderId: number;
+  sender: User;
   recipientId?: number;
-  channelId?: number;
-  content: string;
+  recipientChannel?: number;
+  message: string;
   isDeleted?: boolean;
 };
 
 export type MessageCreateRequest = {
   senderId: number;
-  content: string;
+  message: string;
   recipientId?: number;
   channelId?: number;
 };

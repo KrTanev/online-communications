@@ -12,7 +12,7 @@ const mockFriends: FriendItemType[] = [
 
 type FriendsProps = {
   selectedFriendId: number;
-  onFriendClick: (id: number) => void;
+  onFriendClick: (id: number, name: string) => void;
 };
 
 export const Friends = ({ selectedFriendId, onFriendClick }: FriendsProps) => {

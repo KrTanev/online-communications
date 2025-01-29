@@ -14,7 +14,7 @@ export type FriendItemType = {
 type FriendListItemProps = {
   item: FriendItemType;
   selected: boolean;
-  onClick: (id: number) => void;
+  onClick: (id: number, name: string) => void;
   onDeleteClick: (id: number) => void;
 };
 
@@ -29,7 +29,7 @@ export const FriendListItem = ({ item, selected, onClick, onDeleteClick }: Frien
           bgcolor: !selected ? grey[500] : undefined,
         },
       }}
-      onClick={() => onClick(item.id)}
+      onClick={() => onClick(item.id, item.name)} // Check name
     >
       <Box
         sx={{
