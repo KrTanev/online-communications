@@ -12,9 +12,9 @@ import com.uni.online_communications.models.User;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
-    Optional<List<Message>> findAllByRecipientChannel(Channel channel);
+    Optional<List<Message>> findAllByRecipientChannelAndIsDeletedFalse(Channel channel);
 
-    Optional<List<Message>> findAllByRecipientUserAndSender(User recipient, User sender);
+    Optional<List<Message>> findAllByRecipientUserAndSenderAndIsDeletedFalse(User recipient, User sender);
 
     Optional<Message> getByIdAndIsDeletedFalse(Long messageId);
 }

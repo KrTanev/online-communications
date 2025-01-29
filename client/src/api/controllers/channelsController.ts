@@ -69,6 +69,7 @@ export const useEditChannel = (
       editChannelName(channelId, body),
     onSuccess: (_, { channelId }) => {
       queryClient.invalidateQueries({ queryKey: [`${Endpoints.channel}/${channelId}`] });
+      queryClient.invalidateQueries({ queryKey: [Endpoints.channel] });
     },
     ...options,
   });

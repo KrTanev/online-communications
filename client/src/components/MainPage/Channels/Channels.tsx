@@ -97,7 +97,7 @@ export const Channels = ({ selectedChannelId, onChannelClick }: ChannelsProps) =
             onClick={(item) => onChannelClick(item.channelId, item.channelName)}
             onEditClick={handleEditClick}
             onDeleteClick={handleDeleteClick}
-            selected={x.id === selectedChannelId}
+            selected={x.channelId === selectedChannelId}
           />
         ))}
       </List>

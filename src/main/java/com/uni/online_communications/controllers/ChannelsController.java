@@ -61,8 +61,8 @@ public class ChannelsController {
                     response.setCreatedAt(channel.getCreatedAt());
                     response.setOwnerId(channel.getOwnerId());
 
-                    response.setMemberIds(userChannelMembers.stream()
-                            .filter(channelMember -> channelMember.getChannel().equals(channel))
+                    response.setMemberIds(channelMemberService.getAllMembersPerChannel(channel.getId()).stream()
+                            .filter(channelMember -> channelMember.getChannel().getId().equals(channel.getId()))
                             .map(channelMember -> channelMember.getUser().getId())
                             .collect(Collectors.toList()));
                     return response;

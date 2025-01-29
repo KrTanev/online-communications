@@ -18,14 +18,14 @@ public class MessageService {
     }
 
     public List<Message> getAllMessagesForChannel(Channel channel) {
-        return messageRepository.findAllByRecipientChannel(channel)
+        return messageRepository.findAllByRecipientChannelAndIsDeletedFalse(channel)
                 .orElseThrow(
                         () -> new IllegalArgumentException(
                                 "No messages found for channel with id: " + channel.getId()));
     }
 
     public List<Message> getAllMessagesBetweenUsers(User recipient, User sender) {
-        return messageRepository.findAllByRecipientUserAndSender(recipient, sender)
+        return messageRepository.findAllByRecipientUserAndSenderAndIsDeletedFalse(recipient, sender)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "No messages found between users with ids: " + recipient.getId() + " and " + sender.getId()));
     }

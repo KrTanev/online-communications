@@ -46,7 +46,7 @@ public class ChannelMemberService {
     }
 
     @Transactional
-    public void changeMembersInChannel(Channel channel, List<User> userIds, User addedBy) {
+    public void changeMembersInChannel(Channel channel, List<User> users, User addedBy) {
         List<ChannelMember> channelMembers = channelMemberRepository
                 .findAllByChannelIdAndIsDeletedFalse(channel.getId());
 
@@ -54,11 +54,11 @@ public class ChannelMemberService {
                 .map(cm -> cm.getUser().getId())
                 .collect(Collectors.toSet());
 
-        Set<Long> newMemberIds = userIds.stream()
+        Set<Long> newMemberIds = users.stream()
                 .map(User::getId)
                 .collect(Collectors.toSet());
 
-        List<User> membersToAdd = userIds.stream()
+        List<User> membersToAdd = users.stream()
                 .filter(user -> !existingMemberIds.contains(user.getId()))
                 .toList();
 

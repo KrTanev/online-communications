@@ -25,10 +25,10 @@ export const ChannelListItem = ({
     <ListItem
       sx={{
         borderRadius: 4,
-        bgcolor: selected ? 'gray' : 'white',
+        bgcolor: selected ? '#68B36B' : 'white',
         ':hover': {
           cursor: 'pointer',
-          bgcolor: !selected ? grey[500] : undefined,
+          bgcolor: !selected ? '#68B36B' : undefined,
         },
       }}
       onClick={() => onClick(item)}

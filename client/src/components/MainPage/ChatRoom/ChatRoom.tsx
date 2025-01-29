@@ -8,6 +8,7 @@ import { DATE_FORMATS, EMPTY_STRING } from '@/utils/constants';
 import {
   useAddMessageInChannel,
   useGetAllMessagesForChannel,
+  useSoftDeleteMessage,
 } from '../../../api/controllers/messageController';
 import { ChatRoomMessagesRequest } from '../../../api/types/chatRooms';
 import { User } from '../../../api/types/generic';
@@ -38,7 +39,11 @@ export const ChatRoomView = ({ roomName, selectedRoomId }: ChatRoomViewProps) =>
   //TODO: Get user
 
   const postChatMessage = useAddMessageInChannel();
+
+  const deleteMessage = useSoftDeleteMessage();
   const [newMessage, setNewMessage] = useState(EMPTY_STRING);
+
+  const [deleteSectionHovered, setIsDeleteSectionHovered] = useState(false);
 
   const { data: chatRoomMessages } = useGetAllMessagesForChannel(selectedRoomId, {
     enabled: Boolean(selectedRoomId),
@@ -56,6 +61,8 @@ export const ChatRoomView = ({ roomName, selectedRoomId }: ChatRoomViewProps) =>
     postChatMessage.mutate(messageReqData);
     setNewMessage('');
   };
+
+  const filtered = chatRoomMessages?.filter((x) => x.sender.id === userInfo.id) || [];
 
   return (
     <ChatContainer sx={{ mx: 4 }}>
@@ -78,20 +85,40 @@ export const ChatRoomView = ({ roomName, selectedRoomId }: ChatRoomViewProps) =>
               </Typography>
               <Typography>{msg.message}</Typography>
             </Box>
-            <Box
-              flexDirection="column"
-              display="flex"
-              gap="2px"
-              justifyContent="flex-end"
-              alignContent="flex-end"
-            >
-              <Typography variant="caption">
-                {dayjs(msg.createdAt).format(DATE_FORMATS.DATE_SHORT_MONTH_YEAR)}
-              </Typography>
 
-              <Typography variant="caption" align="right">
-                {dayjs(msg.createdAt).format('HH:MM')}
-              </Typography>
+            <Box
+              onMouseEnter={() => {
+                if (msg.sender.id === userInfo.id && filtered[filtered.length - 1].id === msg.id) {
+                  setIsDeleteSectionHovered(true);
+                }
+              }}
+              onMouseLeave={() => {
+                if (msg.sender.id === userInfo.id && filtered[filtered.length - 1].id === msg.id) {
+                  setIsDeleteSectionHovered(false);
+                }
+              }}
+            >
+              <Box display="flex" justifyContent="flex-end" alignContent="flex-end">
+                {deleteSectionHovered && filtered[filtered.length - 1].id === msg.id ? (
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => deleteMessage.mutate(msg.id)}
+                  >
+                    Delete
+                  </Button>
+                ) : (
+                  <Box flexDirection="column" display="flex" gap="2px">
+                    <Typography variant="caption">
+                      {dayjs(msg.createdAt).format(DATE_FORMATS.DATE_SHORT_MONTH_YEAR)}
+                    </Typography>
+
+                    <Typography variant="caption" align="right">
+                      {dayjs(msg.createdAt).format('HH:MM')}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
             </Box>
           </MessageBox>
         ))}
