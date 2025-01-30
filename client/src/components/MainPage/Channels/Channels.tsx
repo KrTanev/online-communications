@@ -16,7 +16,7 @@ import { ChannelForm, ChannelFormData } from './ChannelForm';
 import { ChannelListItem } from './ChannelListItem';
 
 type ChannelsProps = {
-  selectedChannelId: number;
+  selectedChannelId?: number;
   onChannelClick: (id: number, name: string) => void;
 };
 
@@ -83,7 +83,7 @@ export const Channels = ({ selectedChannelId, onChannelClick }: ChannelsProps) =
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Typography>Available channels</Typography>
 
-        <IconWrapper onClick={() => setShowAddDialog(true)}>
+        <IconWrapper onClick={() => setShowAddDialog(true)} tooltipTitle="Create channel">
           <AddIcon />
         </IconWrapper>
       </Box>

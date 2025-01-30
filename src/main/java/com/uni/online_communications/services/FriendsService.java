@@ -17,7 +17,8 @@ public class FriendsService {
     }
 
     public List<Friend> getAllFriendsForUser(User user) {
-        List<Friend> foundFriends = friendRepository.findByFriendOneOrFriendTwoAndIsDeletedFalse(user, user);
+        List<Friend> foundFriends = friendRepository.findByFriendOneAndIsDeletedFalseOrFriendTwoAndIsDeletedFalse(user,
+                user);
 
         if (foundFriends.isEmpty()) {
             throw new IllegalArgumentException("No friends found for user with username: " + user.getUsername());
@@ -56,7 +57,7 @@ public class FriendsService {
     }
 
     public void softDeleteFriend(User userOne, User userTwo) {
-        List<Friend> foundFriends = friendRepository.findByFriendOneOrFriendTwoAndIsDeletedFalse(userOne, userTwo);
+        List<Friend> foundFriends = friendRepository.findByFriendOneAndIsDeletedFalseOrFriendTwoAndIsDeletedFalse(userOne, userTwo);
 
         Friend foundFriend = null;
 

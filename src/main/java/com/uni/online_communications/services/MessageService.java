@@ -25,9 +25,19 @@ public class MessageService {
     }
 
     public List<Message> getAllMessagesBetweenUsers(User recipient, User sender) {
-        return messageRepository.findAllByRecipientUserAndSenderAndIsDeletedFalse(recipient, sender)
+        List<Message> messagesFromSender = messageRepository
+                .findAllBySenderAndRecipientUserAndIsDeletedFalse(recipient, sender)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "No messages found between users with ids: " + recipient.getId() + " and " + sender.getId()));
+
+        List<Message> messagesFromRecipient = messageRepository
+                .findAllByRecipientUserAndSenderAndIsDeletedFalse(recipient, sender)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No messages found between users with ids: " + recipient.getId() + " and " + sender.getId()));
+
+        messagesFromSender.addAll(messagesFromRecipient);
+
+        return messagesFromSender;
     }
 
     public Message createNewMessage(Message message) {

@@ -9,7 +9,7 @@ import { EmptyChat } from './ChatRoom/EmptyChat';
 import { Friends } from './Friends/Friends';
 
 export type SelectedItem = {
-  itemId: string | number;
+  itemId: number;
   type: 'channel' | 'friend';
   chatName: string;
 };
@@ -46,7 +46,7 @@ export const MainPageContainer = () => {
       >
         <InnerContainer title="Channels">
           <Channels
-            selectedChannelId={Number(selectedItem?.itemId)}
+            selectedChannelId={selectedItem?.type === 'channel' ? selectedItem?.itemId : undefined}
             onChannelClick={handleChannelClick}
           />
         </InnerContainer>
@@ -57,14 +57,15 @@ export const MainPageContainer = () => {
           ) : (
             <ChatRoomView
               roomName={selectedItem.chatName}
-              selectedRoomId={Number(selectedItem.itemId)}
+              selectedItemId={selectedItem.itemId}
+              type={selectedItem.type}
             />
           )}
         </InnerContainer>
 
         <InnerContainer title="Friends">
           <Friends
-            selectedFriendId={selectedItem?.itemId as number}
+            selectedFriendId={selectedItem?.type === 'friend' ? selectedItem.itemId : undefined}
             onFriendClick={handleFriendClick}
           />
         </InnerContainer>

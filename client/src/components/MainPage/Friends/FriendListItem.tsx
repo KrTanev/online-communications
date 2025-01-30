@@ -1,20 +1,13 @@
-import DeleteIcon from '@mui/icons-material/Delete';
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { Box, ListItem } from '@mui/material';
-import { grey } from '@mui/material/colors';
 
+import { FriendsResponse } from '../../../api/types/friends';
 import { IconWrapper } from '../../common/IconWrapper';
 
-export type FriendItemType = {
-  id: number;
-  name: string;
-  friendIdOne: number;
-  friendIdTwo: number;
-};
-
 type FriendListItemProps = {
-  item: FriendItemType;
+  item: FriendsResponse;
   selected: boolean;
-  onClick: (id: number, name: string) => void;
+  onClick: (id: number, friendId: number, friendName: string) => void;
   onDeleteClick: (id: number) => void;
 };
 
@@ -23,13 +16,13 @@ export const FriendListItem = ({ item, selected, onClick, onDeleteClick }: Frien
     <ListItem
       sx={{
         borderRadius: 4,
-        bgcolor: selected ? 'gray' : 'white',
+        bgcolor: selected ? '#68B36B' : 'white',
         ':hover': {
           cursor: 'pointer',
-          bgcolor: !selected ? grey[500] : undefined,
+          bgcolor: !selected ? '#68B36B' : undefined,
         },
       }}
-      onClick={() => onClick(item.id, item.name)} // Check name
+      onClick={() => onClick(item.friendshipId, item.friendId, item.friendName)} // Check name
     >
       <Box
         sx={{
@@ -39,11 +32,11 @@ export const FriendListItem = ({ item, selected, onClick, onDeleteClick }: Frien
           width: '100%',
         }}
       >
-        <Box>{item.name}</Box>
+        <Box>{item.friendName}</Box>
 
         <Box>
-          <IconWrapper onClick={() => onDeleteClick(item.id)} tooltipTitle="Delete">
-            <DeleteIcon />
+          <IconWrapper onClick={() => onDeleteClick(item.friendId)} tooltipTitle="Delete">
+            <PersonRemoveIcon />
           </IconWrapper>
         </Box>
       </Box>

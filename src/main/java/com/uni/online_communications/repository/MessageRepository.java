@@ -16,5 +16,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     Optional<List<Message>> findAllByRecipientUserAndSenderAndIsDeletedFalse(User recipient, User sender);
 
+    Optional<List<Message>> findAllBySenderAndRecipientUserAndIsDeletedFalse(User recipient, User sender);
+
     Optional<Message> getByIdAndIsDeletedFalse(Long messageId);
 }

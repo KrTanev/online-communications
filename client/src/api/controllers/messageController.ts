@@ -5,13 +5,8 @@ import { queryClient } from '../../config/queryclient.config';
 import { requestResponseHandler } from '../../config/requests.config';
 import { QueryOptions, useQueryRequest } from '../../hooks/useQueryRequest';
 import { Endpoints } from '../Endpoints';
-import { Message, MessageCreateRequest } from '../types/message';
+import { Message, MessageCreateRequest, MessageFriendsRequest } from '../types/message';
 
-type MessageFriendsRequest = {
-  recipientId: number;
-  senderId: number;
-  message: string;
-};
 const getAllMessagesForChannel = async (channelId: number): Promise<Message[]> => {
   return requestResponseHandler<Message[]>(() =>
     axiosClient.get(`${Endpoints.message}/channel/${channelId}`),

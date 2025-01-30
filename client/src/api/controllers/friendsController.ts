@@ -1,6 +1,7 @@
 import { MutationOptions, QueryOptions, useMutation } from '@tanstack/react-query';
 
 import { axiosClient } from '../../config/axios.config';
+import { queryClient } from '../../config/queryclient.config';
 import { requestResponseHandler } from '../../config/requests.config';
 import { useQueryRequest } from '../../hooks/useQueryRequest';
 import { Endpoints } from '../Endpoints';
@@ -30,7 +31,7 @@ export const useGetAllFriendsForUser = (
 ) => {
   return useQueryRequest({
     func: () => getAllFriendsForUser(userId),
-    key: [`${Endpoints.friends}/forUser/${userId}`],
+    key: [Endpoints.friends, `${Endpoints.friends}/forUser/${userId}`],
     options,
   });
 };
@@ -41,6 +42,9 @@ export const useAddFriend = (
   return useMutation({
     mutationFn: ({ userId, friendId }: { userId: number; friendId: number }) =>
       addFriend(userId, friendId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Endpoints.friends] });
+    },
     ...options,
   });
 };
@@ -51,6 +55,9 @@ export const useDeleteFriend = (
   return useMutation({
     mutationFn: ({ userId, friendId }: { userId: number; friendId: number }) =>
       deleteFriend(userId, friendId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Endpoints.friends] });
+    },
     ...options,
   });
 };

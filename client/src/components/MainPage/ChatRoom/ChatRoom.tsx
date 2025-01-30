@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Box, Button, TextField, Typography, styled } from '@mui/material';
 import dayjs from 'dayjs';
@@ -6,12 +6,14 @@ import dayjs from 'dayjs';
 import { DATE_FORMATS, EMPTY_STRING } from '@/utils/constants';
 
 import {
+  useAddMessageBetweenUsers,
   useAddMessageInChannel,
+  useGetAllMessagesBetweenUsers,
   useGetAllMessagesForChannel,
   useSoftDeleteMessage,
 } from '../../../api/controllers/messageController';
-import { ChatRoomMessagesRequest } from '../../../api/types/chatRooms';
 import { User } from '../../../api/types/generic';
+import { Message } from '../../../api/types/message';
 import { MessageBox } from './MessageBox';
 
 const ChatContainer = styled(Box)({
@@ -24,10 +26,11 @@ const ChatContainer = styled(Box)({
 
 type ChatRoomViewProps = {
   roomName: string;
-  selectedRoomId: number;
+  type: 'channel' | 'friend';
+  selectedItemId?: number;
 };
 
-export const ChatRoomView = ({ roomName, selectedRoomId }: ChatRoomViewProps) => {
+export const ChatRoomView = ({ roomName, type, selectedItemId }: ChatRoomViewProps) => {
   const userInfo = {
     id: 33,
     username: 'Test125',
@@ -38,31 +41,57 @@ export const ChatRoomView = ({ roomName, selectedRoomId }: ChatRoomViewProps) =>
   } as User;
   //TODO: Get user
 
-  const postChatMessage = useAddMessageInChannel();
+  const isGroupChannel = type === 'channel';
 
-  const deleteMessage = useSoftDeleteMessage();
-  const [newMessage, setNewMessage] = useState(EMPTY_STRING);
-
-  const [deleteSectionHovered, setIsDeleteSectionHovered] = useState(false);
-
-  const { data: chatRoomMessages } = useGetAllMessagesForChannel(selectedRoomId, {
-    enabled: Boolean(selectedRoomId),
+  const { data: chatRoomMessages } = useGetAllMessagesForChannel(selectedItemId || 0, {
+    enabled: Boolean(isGroupChannel && selectedItemId),
   });
 
-  chatRoomMessages?.sort((a: any, b: any) => dayjs(a.date).unix() - dayjs(b.date).unix());
+  const { data: friendsMessages } = useGetAllMessagesBetweenUsers(
+    userInfo.id || 0,
+    selectedItemId || 0,
+    {
+      enabled: Boolean(!isGroupChannel && selectedItemId),
+    },
+  );
+
+  const postChatMessage = useAddMessageInChannel();
+  const postFriendsMessage = useAddMessageBetweenUsers();
+
+  const deleteMessage = useSoftDeleteMessage();
+
+  const [messages, setMessages] = useState<Message[]>();
+  const [newMessage, setNewMessage] = useState(EMPTY_STRING);
+  const [deleteSectionHovered, setIsDeleteSectionHovered] = useState(false);
+
+  useEffect(() => {
+    const messagesToPresent = (isGroupChannel ? chatRoomMessages : friendsMessages)?.sort(
+      (a: any, b: any) => dayjs(a.date).unix() - dayjs(b.date).unix(),
+    );
+
+    setMessages(structuredClone(messagesToPresent));
+  }, [chatRoomMessages, friendsMessages, type, roomName]);
 
   const handleSendMessage = () => {
     const messageReqData = {
       message: newMessage,
-      channelId: selectedRoomId,
+      channelId: selectedItemId || 0,
+      recipientId: selectedItemId || 0,
       senderId: userInfo?.id || 0,
     };
 
-    postChatMessage.mutate(messageReqData);
+    if (selectedItemId && userInfo?.id) {
+      if (isGroupChannel) {
+        postChatMessage.mutate(messageReqData);
+      } else {
+        postFriendsMessage.mutate(messageReqData);
+      }
+    }
+
     setNewMessage('');
   };
 
-  const filtered = chatRoomMessages?.filter((x) => x.sender.id === userInfo.id) || [];
+  const filtered = messages?.filter((x) => x.sender.id === userInfo.id) || [];
 
   return (
     <ChatContainer sx={{ mx: 4 }}>
@@ -70,14 +99,14 @@ export const ChatRoomView = ({ roomName, selectedRoomId }: ChatRoomViewProps) =>
         {roomName}
       </Typography>
 
-      {chatRoomMessages?.length === 0 && (
+      {messages?.length === 0 && (
         <Box display="flex" justifyContent="center">
           No message
         </Box>
       )}
 
       <Box flex={1} overflow="auto">
-        {chatRoomMessages?.map((msg) => (
+        {messages?.map((msg) => (
           <MessageBox key={msg.id} elevation={3} isCurrentUser={msg.sender.id === userInfo?.id}>
             <Box>
               <Typography variant="subtitle2" color="primary">
@@ -100,13 +129,15 @@ export const ChatRoomView = ({ roomName, selectedRoomId }: ChatRoomViewProps) =>
             >
               <Box display="flex" justifyContent="flex-end" alignContent="flex-end">
                 {deleteSectionHovered && filtered[filtered.length - 1].id === msg.id ? (
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={() => deleteMessage.mutate(msg.id)}
-                  >
-                    Delete
-                  </Button>
+                  <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', pt: '3px' }}>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => deleteMessage.mutate(msg.id)}
+                    >
+                      Delete
+                    </Button>
+                  </Box>
                 ) : (
                   <Box flexDirection="column" display="flex" gap="2px">
                     <Typography variant="caption">

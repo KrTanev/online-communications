@@ -14,3 +14,9 @@ export type MessageCreateRequest = {
   recipientId?: number;
   channelId?: number;
 };
+
+export type MessageFriendsRequest = {
+  recipientId: number;
+  senderId: number;
+  message: string;
+};

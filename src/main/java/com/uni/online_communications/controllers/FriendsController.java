@@ -39,12 +39,13 @@ public class FriendsController {
         List<FriendsResponse> foundFriends = friends.stream()
                 .map(foundFriend -> {
                     FriendsResponse response = new FriendsResponse();
-                    response.setFriendId(foundFriend.getId());
 
                     Long friendToSearchData = foundFriend.getFriendOne().getId().equals(userId)
                             ? foundFriend.getFriendTwo().getId()
                             : foundFriend.getFriendOne().getId();
 
+                    response.setFriendshipId(foundFriend.getId());
+                    response.setFriendId(friendToSearchData);
                     response.setFriendName(users.stream()
                             .filter(user -> user.getId().equals(friendToSearchData))
                             .findFirst().get().getUsername());
