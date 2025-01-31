@@ -1,9 +1,9 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import { Box, ListItem } from '@mui/material';
-import { grey } from '@mui/material/colors';
 
 import { AccessibleChannelsResponse } from '../../../api/types/channels';
+import { useAuthorization } from '../../../providers/AuthorizationProvider';
 import { IconWrapper } from '../../common/IconWrapper';
 
 type ChannelListItemProps = {
@@ -21,6 +21,8 @@ export const ChannelListItem = ({
   onEditClick,
   onDeleteClick,
 }: ChannelListItemProps) => {
+  const { authUser } = useAuthorization();
+
   return (
     <ListItem
       sx={{
@@ -43,15 +45,17 @@ export const ChannelListItem = ({
       >
         <Box>{item.channelName}</Box>
 
-        <Box>
-          <IconWrapper onClick={() => onEditClick(item)} tooltipTitle="Edit">
-            <ModeEditOutlineIcon />
-          </IconWrapper>
+        {item.ownerId === authUser?.id && (
+          <Box>
+            <IconWrapper onClick={() => onEditClick(item)} tooltipTitle="Edit">
+              <ModeEditOutlineIcon />
+            </IconWrapper>
 
-          <IconWrapper onClick={() => onDeleteClick(item)} tooltipTitle="Delete">
-            <DeleteIcon />
-          </IconWrapper>
-        </Box>
+            <IconWrapper onClick={() => onDeleteClick(item)} tooltipTitle="Delete">
+              <DeleteIcon />
+            </IconWrapper>
+          </Box>
+        )}
       </Box>
     </ListItem>
   );

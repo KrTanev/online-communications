@@ -19,7 +19,7 @@ export default function Header() {
 
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           {authUser ? (
-            <Typography>Hello {authUser.username}</Typography>
+            <Typography>Hello, {authUser.username}</Typography>
           ) : (
             <Typography onClick={handleLogInClick}>Log in</Typography>
           )}
