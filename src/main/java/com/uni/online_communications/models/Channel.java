@@ -37,8 +37,16 @@ public class Channel {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Long getOwnerId() {
         return owner_id;
+    }
+
+    public void setOwnerId(Long owner_id) {
+        this.owner_id = owner_id;
     }
 
     public Timestamp getCreatedAt() {
@@ -47,5 +55,9 @@ public class Channel {
 
     public Boolean getIsDeleted() {
         return isDeleted;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 }

@@ -1,7 +1,8 @@
 package com.uni.online_communications.models;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "MESSAGES")
@@ -27,10 +28,15 @@ public class Message {
     private String message;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private Timestamp createdAt;
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
+
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = new Timestamp(System.currentTimeMillis());
+    }
 
     public Long getId() {
         return id;
@@ -72,11 +78,11 @@ public class Message {
         this.message = message;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 

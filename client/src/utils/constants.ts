@@ -1,0 +1,6 @@
+export const EMPTY_STRING = '';
+
+export const DATE_FORMATS = {
+  DATE_SHORT_MONTH_YEAR: 'DD MMM, YYYY',
+  DAY_JS_DEFAULT_FORMAT: 'YYYY-MM-DD',
+};

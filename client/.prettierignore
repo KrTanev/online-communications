@@ -1,0 +1,8 @@
+.next
+node_modules
+package-lock.json
+public/*
+!public/locales
+
+!.storybook
+next-sitemap.config.js

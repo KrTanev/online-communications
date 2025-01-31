@@ -1,0 +1,53 @@
+{
+  // Configuration for JavaScript files
+  "extends": ["next/core-web-vitals", "plugin:prettier/recommended"],
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true,
+        "endOfLine": "auto"
+      }
+    ]
+  },
+  "overrides": [
+    // Configuration for TypeScript files
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "plugins": ["@typescript-eslint", "unused-imports"],
+      "extends": ["next/core-web-vitals", "plugin:prettier/recommended"],
+      "parserOptions": {
+        "project": "./client/tsconfig.json"
+      },
+      "rules": {
+        "prettier/prettier": [
+          "error",
+          {
+            "singleQuote": true,
+            "endOfLine": "auto",
+            "printWidth": 100,
+            "tabWidth": 2,
+            "useTabs": false,
+            "semi": true,
+            "trailingComma": "all",
+            "bracketSpacing": true,
+            "arrowParens": "always"
+          }
+        ],
+        "guard-for-in": "off",
+        "no-param-reassign": "off",
+        "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+        "react/destructuring-assignment": "off",
+        "react/require-default-props": "off",
+        "react/jsx-props-no-spreading": "off",
+        "react-hooks/exhaustive-deps": "off",
+        "@typescript-eslint/consistent-type-imports": "error",
+        "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
+        "import/prefer-default-export": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "unused-imports/no-unused-imports": "error",
+        "unused-imports/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+      }
+    }
+  ]
+}
