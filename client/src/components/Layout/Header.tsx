@@ -1,7 +1,14 @@
 import { AppBar, Box, Toolbar, Typography } from '@mui/material';
+import { useRouter } from 'next/router';
+
+import { useAuthorization } from '../../providers/AuthorizationProvider';
 
 export default function Header() {
-  const isLoggedIn = true;
+  const router = useRouter();
+
+  const { authUser } = useAuthorization();
+
+  const handleLogInClick = () => router.push('/login');
 
   return (
     <AppBar position="static">
@@ -11,7 +18,11 @@ export default function Header() {
         </Typography>
 
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          {isLoggedIn ? <Typography>Hello User</Typography> : <Typography>Log in</Typography>}
+          {authUser ? (
+            <Typography>Hello {authUser.username}</Typography>
+          ) : (
+            <Typography onClick={handleLogInClick}>Log in</Typography>
+          )}
         </Box>
       </Toolbar>
     </AppBar>

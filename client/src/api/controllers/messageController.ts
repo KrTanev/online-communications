@@ -47,7 +47,8 @@ export const useGetAllMessagesForChannel = (
   return useQueryRequest({
     func: () => getAllMessagesForChannel(channelId),
     key: [Endpoints.message, `${Endpoints.message}/channel/${channelId}`],
-    options,
+
+    options: { ...options, refetchInterval: 1000 },
   });
 };
 
@@ -59,7 +60,7 @@ export const useGetAllMessagesBetweenUsers = (
   return useQueryRequest({
     func: () => getAllMessagesBetweenUsers(recipientId, senderId),
     key: [Endpoints.message, `${Endpoints.message}/user/${recipientId}/${senderId}`],
-    options,
+    options: { ...options, refetchInterval: 1000 },
   });
 };
 

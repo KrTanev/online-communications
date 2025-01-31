@@ -13,6 +13,7 @@ import { CustomThemeProvider, ThemeVariantProvider } from '@/providers/ThemeVari
 import '@/styles/globals.css';
 
 import { NotificationMessages } from '../config/notification.config';
+import { AuthorizationProvider } from '../providers/AuthorizationProvider';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -34,14 +35,16 @@ const MyApp = ({ Component, pageProps }: MyAppProps) => {
           <title>FE</title>
         </Head>
 
-        <ThemeVariantProvider>
-          <CustomThemeProvider>
-            <CssBaseline />
-            <NotificationMessages />
+        <AuthorizationProvider>
+          <ThemeVariantProvider>
+            <CustomThemeProvider>
+              <CssBaseline />
+              <NotificationMessages />
 
-            {getLayout(<Component {...pageProps} />)}
-          </CustomThemeProvider>
-        </ThemeVariantProvider>
+              {getLayout(<Component {...pageProps} />)}
+            </CustomThemeProvider>
+          </ThemeVariantProvider>
+        </AuthorizationProvider>
       </StyledEngineProvider>
     </QueryClientProvider>
   );

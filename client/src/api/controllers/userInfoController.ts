@@ -54,7 +54,11 @@ export const useCreateNewUser = (options?: MutationOptions<User, Error, CreateUs
 
 export const useVerifyUser = (options?: MutationOptions<User, Error, VerifyUserRequest>) => {
   return useMutation({
-    mutationFn: (user: VerifyUserRequest) => verifyUser(user),
+    mutationFn: async (user: VerifyUserRequest) => {
+      const response = await verifyUser(user);
+
+      return response;
+    },
     ...options,
   });
 };

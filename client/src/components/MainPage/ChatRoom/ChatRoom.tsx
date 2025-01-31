@@ -12,8 +12,8 @@ import {
   useGetAllMessagesForChannel,
   useSoftDeleteMessage,
 } from '../../../api/controllers/messageController';
-import { User } from '../../../api/types/generic';
 import { Message } from '../../../api/types/message';
+import { useAuthorization } from '../../../providers/AuthorizationProvider';
 import { MessageBox } from './MessageBox';
 
 const ChatContainer = styled(Box)({
@@ -31,15 +31,8 @@ type ChatRoomViewProps = {
 };
 
 export const ChatRoomView = ({ roomName, type, selectedItemId }: ChatRoomViewProps) => {
-  const userInfo = {
-    id: 33,
-    username: 'Test125',
-    password: '1234',
-    email: 'test@abv.bgg5',
-    createdAt: '2025-01-27T17:45:34.664+00:00',
-    isDeleted: false,
-  } as User;
-  //TODO: Get user
+  const { authUser } = useAuthorization();
+  const authUserId = authUser?.id || -1;
 
   const isGroupChannel = type === 'channel';
 
@@ -47,13 +40,9 @@ export const ChatRoomView = ({ roomName, type, selectedItemId }: ChatRoomViewPro
     enabled: Boolean(isGroupChannel && selectedItemId),
   });
 
-  const { data: friendsMessages } = useGetAllMessagesBetweenUsers(
-    userInfo.id || 0,
-    selectedItemId || 0,
-    {
-      enabled: Boolean(!isGroupChannel && selectedItemId),
-    },
-  );
+  const { data: friendsMessages } = useGetAllMessagesBetweenUsers(authUserId, selectedItemId || 0, {
+    enabled: Boolean(!isGroupChannel && selectedItemId),
+  });
 
   const postChatMessage = useAddMessageInChannel();
   const postFriendsMessage = useAddMessageBetweenUsers();
@@ -66,7 +55,7 @@ export const ChatRoomView = ({ roomName, type, selectedItemId }: ChatRoomViewPro
 
   useEffect(() => {
     const messagesToPresent = (isGroupChannel ? chatRoomMessages : friendsMessages)?.sort(
-      (a: any, b: any) => dayjs(a.date).unix() - dayjs(b.date).unix(),
+      (a, b) => dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix(),
     );
 
     setMessages(structuredClone(messagesToPresent));
@@ -77,10 +66,10 @@ export const ChatRoomView = ({ roomName, type, selectedItemId }: ChatRoomViewPro
       message: newMessage,
       channelId: selectedItemId || 0,
       recipientId: selectedItemId || 0,
-      senderId: userInfo?.id || 0,
+      senderId: authUserId,
     };
 
-    if (selectedItemId && userInfo?.id) {
+    if (selectedItemId && authUserId) {
       if (isGroupChannel) {
         postChatMessage.mutate(messageReqData);
       } else {
@@ -91,7 +80,7 @@ export const ChatRoomView = ({ roomName, type, selectedItemId }: ChatRoomViewPro
     setNewMessage('');
   };
 
-  const filtered = messages?.filter((x) => x.sender.id === userInfo.id) || [];
+  const filtered = messages?.filter((x) => x.sender.id === authUserId) || [];
 
   return (
     <ChatContainer sx={{ mx: 4 }}>
@@ -107,7 +96,7 @@ export const ChatRoomView = ({ roomName, type, selectedItemId }: ChatRoomViewPro
 
       <Box flex={1} overflow="auto">
         {messages?.map((msg) => (
-          <MessageBox key={msg.id} elevation={3} isCurrentUser={msg.sender.id === userInfo?.id}>
+          <MessageBox key={msg.id} elevation={3} isCurrentUser={msg.sender.id === authUserId}>
             <Box>
               <Typography variant="subtitle2" color="primary">
                 {msg.sender.username || 'No name'}
@@ -117,12 +106,12 @@ export const ChatRoomView = ({ roomName, type, selectedItemId }: ChatRoomViewPro
 
             <Box
               onMouseEnter={() => {
-                if (msg.sender.id === userInfo.id && filtered[filtered.length - 1].id === msg.id) {
+                if (msg.sender.id === authUserId && filtered[filtered.length - 1].id === msg.id) {
                   setIsDeleteSectionHovered(true);
                 }
               }}
               onMouseLeave={() => {
-                if (msg.sender.id === userInfo.id && filtered[filtered.length - 1].id === msg.id) {
+                if (msg.sender.id === authUserId && filtered[filtered.length - 1].id === msg.id) {
                   setIsDeleteSectionHovered(false);
                 }
               }}
@@ -145,7 +134,7 @@ export const ChatRoomView = ({ roomName, type, selectedItemId }: ChatRoomViewPro
                     </Typography>
 
                     <Typography variant="caption" align="right">
-                      {dayjs(msg.createdAt).format('HH:MM')}
+                      {dayjs(msg.createdAt).format('HH:mm')}
                     </Typography>
                   </Box>
                 )}

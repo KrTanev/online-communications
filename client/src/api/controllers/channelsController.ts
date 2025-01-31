@@ -47,7 +47,7 @@ export const useGetAccessibleChannels = (
   return useQueryRequest({
     func: () => getAccessibleChannels(userId),
     key: [Endpoints.channel, `${Endpoints.channel}/user/${userId}`],
-    options,
+    options: { ...options, enabled: Boolean(userId > 0) },
   });
 };
 

@@ -32,7 +32,7 @@ export const useGetAllFriendsForUser = (
   return useQueryRequest({
     func: () => getAllFriendsForUser(userId),
     key: [Endpoints.friends, `${Endpoints.friends}/forUser/${userId}`],
-    options,
+    options: { ...options, enabled: userId > 0 },
   });
 };
 

@@ -10,6 +10,7 @@ import {
   useGetAccessibleChannels,
 } from '../../../api/controllers/channelsController';
 import { AccessibleChannelsResponse } from '../../../api/types/channels';
+import { useAuthorization } from '../../../providers/AuthorizationProvider';
 import { CustomDialog } from '../../common/CustomDialog';
 import { IconWrapper } from '../../common/IconWrapper';
 import { ChannelForm, ChannelFormData } from './ChannelForm';
@@ -21,6 +22,9 @@ type ChannelsProps = {
 };
 
 export const Channels = ({ selectedChannelId, onChannelClick }: ChannelsProps) => {
+  const { authUser } = useAuthorization();
+  const authUserId = authUser?.id || -1;
+
   const [selectedChannel, setSelectedChannel] = useState<AccessibleChannelsResponse>();
   const [channelForm, setChannelFormData] = useState<ChannelFormData>();
 
@@ -28,9 +32,7 @@ export const Channels = ({ selectedChannelId, onChannelClick }: ChannelsProps) =
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
 
-  // TODO: change userIdToChange to the actual user id
-  const userIdToChange = 33;
-  const { data } = useGetAccessibleChannels(userIdToChange);
+  const { data } = useGetAccessibleChannels(authUserId);
 
   const createChannel = useCreateChannel();
   const editChannel = useEditChannel();
@@ -46,7 +48,7 @@ export const Channels = ({ selectedChannelId, onChannelClick }: ChannelsProps) =
     createChannel
       .mutateAsync({
         name: channelForm?.channelName || '',
-        ownerId: Number(userIdToChange),
+        ownerId: Number(authUserId),
         memberIds: channelForm?.channelMembers || [],
       })
       .then(handleCloseDialogs);

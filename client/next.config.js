@@ -20,7 +20,7 @@ module.exports = withRoutes(
       return [
         {
           source: '/',
-          destination: '/main-page',
+          destination: '/login',
           permanent: true,
         },
       ];

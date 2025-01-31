@@ -9,6 +9,7 @@ import {
   useGetAllFriendsForUser,
 } from '../../../api/controllers/friendsController';
 import { FriendsResponse } from '../../../api/types/friends';
+import { useAuthorization } from '../../../providers/AuthorizationProvider';
 import { CustomDialog } from '../../common/CustomDialog';
 import { IconWrapper } from '../../common/IconWrapper';
 import { FriendForm } from './FriendForm';
@@ -20,14 +21,15 @@ type FriendsProps = {
 };
 
 export const Friends = ({ selectedFriendId, onFriendClick }: FriendsProps) => {
+  const { authUser } = useAuthorization();
+  const authUserId = authUser?.id || -1;
+
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState<FriendsResponse | null>(null);
   const [friendId, setFriendId] = useState<number>();
 
-  // TODO; User id
-  const userInfo = { id: 33 };
-  const { data: friends } = useGetAllFriendsForUser(userInfo.id);
+  const { data: friends } = useGetAllFriendsForUser(authUserId);
   const addFriend = useAddFriend();
   const deleteFriend = useDeleteFriend();
 
@@ -40,7 +42,7 @@ export const Friends = ({ selectedFriendId, onFriendClick }: FriendsProps) => {
 
   const handleSubmitAdd = () => {
     addFriend.mutate(
-      { userId: userInfo.id, friendId: friendId || 0 },
+      { userId: authUserId, friendId: friendId || 0 },
       {
         onSuccess: () => {
           handleCloseDialogs();
@@ -52,7 +54,7 @@ export const Friends = ({ selectedFriendId, onFriendClick }: FriendsProps) => {
   const handleSubmitDelete = () => {
     if (selectedFriend && selectedFriend?.friendId) {
       deleteFriend.mutate(
-        { userId: userInfo.id, friendId: selectedFriend.friendId },
+        { userId: authUserId, friendId: selectedFriend.friendId },
         {
           onSuccess: () => {
             handleCloseDialogs();
