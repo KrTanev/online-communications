@@ -34,8 +34,6 @@ export const MainPageContainer = () => {
         p: 5,
       }}
     >
-      <Box marginBottom={3}>Uni project</Box>
-
       <Box
         sx={{
           height: '100%',

@@ -41,7 +41,7 @@ export const useGetUserByUsername = (username: string, options?: QueryOptions<Us
   return useQueryRequest({
     func: () => getUserByUsername(username),
     key: [`${Endpoints.user}/${username}`],
-    options,
+    options: { ...options, enabled: Boolean(username) },
   });
 };
 

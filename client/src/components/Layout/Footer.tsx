@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <Box
       sx={{
-        position: 'fixed',
+        position: 'sticky',
         bottom: 0,
         width: '100%',
         zIndex: 9999,

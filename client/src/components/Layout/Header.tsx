@@ -2,6 +2,7 @@ import { AppBar, Box, Toolbar, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 
 import { useAuthorization } from '../../providers/AuthorizationProvider';
+import { LogoutMenu } from './LogoutMenu';
 
 export default function Header() {
   const router = useRouter();
@@ -19,7 +20,11 @@ export default function Header() {
 
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           {authUser ? (
-            <Typography>Hello, {authUser.username}</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography>Hello, {authUser.username}</Typography>
+
+              <LogoutMenu />
+            </Box>
           ) : (
             <Typography onClick={handleLogInClick}>Log in</Typography>
           )}

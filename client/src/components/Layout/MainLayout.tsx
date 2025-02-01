@@ -8,9 +8,7 @@ export default function MainLayout({ children }: { children: JSX.Element }) {
     <Box display="flex" flexDirection="column" justifyContent="center">
       <Header />
 
-      <Box display="flex" mb="100px">
-        {children}
-      </Box>
+      <Box display="flex">{children}</Box>
 
       <Footer />
     </Box>

@@ -32,6 +32,8 @@ const Register = () => {
     authenticateUser
       .mutateAsync({ email: data.email, password: data.password })
       .then((response) => {
+        sessionStorage.setItem('loggedUserObject', JSON.stringify(response));
+
         setAuthUser(response);
         showNotification('success', 'You successfully signed in!');
         router.push('/main-page');

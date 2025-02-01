@@ -92,9 +92,9 @@ export const Channels = ({ selectedChannelId, onChannelClick }: ChannelsProps) =
       <Divider />
 
       <List sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
-        {data?.map((x) => (
+        {data?.map((x, i) => (
           <ChannelListItem
-            key={x.id}
+            key={`${i}-${x.id}`}
             item={x}
             onClick={(item) => onChannelClick(item.channelId, item.channelName)}
             onEditClick={handleEditClick}

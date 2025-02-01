@@ -28,10 +28,6 @@ public class ChannelMemberService {
     public List<ChannelMember> getAllMembersPerChannel(Long channelId) {
         List<ChannelMember> channelMembers = channelMemberRepository.findAllByChannelIdAndIsDeletedFalse(channelId);
 
-        if (channelMembers.isEmpty()) {
-            throw new IllegalArgumentException("No members found for channel with id: " + channelId);
-        }
-
         return channelMembers;
     }
 
@@ -39,10 +35,6 @@ public class ChannelMemberService {
         List<ChannelMember> channelMembers = channelMemberRepository.findAllByUserIdAndIsDeletedFalse(userId);
 
         List<ChannelMember> ownedChannels = channelMemberRepository.findAllByAddedByIdAndIsDeletedFalse(userId);
-
-        if (channelMembers.isEmpty() && ownedChannels.isEmpty()) {
-            throw new IllegalArgumentException("No channels found for user with id: " + userId);
-        }
 
         channelMembers.addAll(ownedChannels);
 

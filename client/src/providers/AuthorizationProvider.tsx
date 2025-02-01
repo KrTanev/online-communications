@@ -1,7 +1,9 @@
 import type { Dispatch, SetStateAction } from 'react';
-import { type ReactNode, createContext, useContext, useMemo, useState } from 'react';
+import { type ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
 
+import { useGetUserByUsername } from '../api/controllers/userInfoController';
 import { User } from '../api/types/generic';
+import { getSessionUser } from '../utils/authHelper';
 
 type AuthorizationProviderProps = {
   children: ReactNode;
@@ -23,6 +25,18 @@ export const AuthorizationProvider = (props: AuthorizationProviderProps) => {
   const { children } = props;
 
   const [authUser, setAuthUser] = useState<User>();
+
+  let username = '';
+
+  if (typeof window !== 'undefined') {
+    username = getSessionUser()?.username || '';
+  }
+
+  const { data } = useGetUserByUsername(username);
+
+  useEffect(() => {
+    setAuthUser(data);
+  }, [data]);
 
   const value = useMemo(() => ({ authUser, setAuthUser }), [authUser, setAuthUser]);
 

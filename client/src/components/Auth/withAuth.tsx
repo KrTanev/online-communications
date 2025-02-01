@@ -21,8 +21,11 @@ export const withAuth = <P extends object>(Component: NextPageWithLayout): React
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+      const userSession = sessionStorage.getItem('loggedUserObject');
+      const loggedUserName = userSession ? JSON.parse(userSession) : undefined;
+
       const unsubscribe = () => {
-        if (!authUser) {
+        if (!authUser && !loggedUserName) {
           router.push('/login');
         }
         setLoading(false);

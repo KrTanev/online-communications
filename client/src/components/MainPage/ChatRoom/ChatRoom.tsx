@@ -94,7 +94,7 @@ export const ChatRoomView = ({ roomName, type, selectedItemId }: ChatRoomViewPro
         </Box>
       )}
 
-      <Box flex={1} overflow="auto">
+      <Box flex={1} overflow="auto" maxHeight="55vh">
         {messages?.map((msg) => (
           <MessageBox key={msg.id} elevation={3} isCurrentUser={msg.sender.id === authUserId}>
             <Box>
